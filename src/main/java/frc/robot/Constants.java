@@ -56,8 +56,14 @@ public final class Constants {
     public static final int kFrontRightTurningCanId = 6;
     public static final int kRearRightTurningCanId = 8;
 
-    public static final int kPigeonCanId = 0; 
+  //Analog Encoder values
+    public static final int kFrontLeftAnalogEncoder = 0;
+    public static final int kRearLeftAnalogEncoder = 1;
+    public static final int kFrontRightAnalogEncoder = 3;
+    public static final int kRearRightAnalogEncoder = 2;
 
+    //Gyro
+    public static final int kPigeonCanId = 0; 
     public static final boolean kGyroReversed = false;
   }
 
