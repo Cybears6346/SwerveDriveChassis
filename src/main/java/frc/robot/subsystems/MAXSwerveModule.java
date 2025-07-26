@@ -112,5 +112,6 @@ public class MAXSwerveModule {
   /** Zeroes all the SwerveModule encoders. */
   public void resetEncoders() {
     m_drivingEncoder.setPosition(0);
+    m_turningEncoder.setPosition(0); //Temporary for Relative Encoder
   }
 }
