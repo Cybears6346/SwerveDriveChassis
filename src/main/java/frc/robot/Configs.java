@@ -52,5 +52,25 @@ public final class Configs {
                     .positionWrappingEnabled(true)
                     .positionWrappingInputRange(0, 2 * Math.PI);
         }
+        //ONLY FOR INVERTING 1 MOTOR
+        public static final SparkFlexConfig rearRightDrivingConfig = new SparkFlexConfig();
+        static {
+            double drivingFactor = ModuleConstants.kWheelDiameterMeters * Math.PI/ ModuleConstants.kDrivingMotorReduction;
+            double drivingVelocityFeedForward = 1 / ModuleConstants.kDriveWheelFreeSpeedRps;
+            rearRightDrivingConfig
+                .idleMode(IdleMode.kBrake)
+                .smartCurrentLimit(50)
+                .inverted(true); // <--- Invert this motor only
+        
+            rearRightDrivingConfig.encoder
+                .positionConversionFactor(drivingFactor)
+                .velocityConversionFactor(drivingFactor / 60.0);
+        
+            rearRightDrivingConfig.closedLoop
+                .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+                .pid(0.04, 0, 0)
+                .velocityFF(drivingVelocityFeedForward)
+                .outputRange(-1, 1);
+        }
     }
 }

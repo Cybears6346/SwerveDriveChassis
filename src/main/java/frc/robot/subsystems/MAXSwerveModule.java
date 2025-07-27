@@ -62,9 +62,18 @@ public class MAXSwerveModule {
     m_turningPIDController.enableContinuousInput(0, 2 * Math.PI);
 
     // Apply configurations - only need driving config since turning is software controlled
-    m_drivingSpark.configure(Configs.MAXSwerveModule.drivingConfig, ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+    // m_drivingSpark.configure(Configs.MAXSwerveModule.drivingConfig, ResetMode.kResetSafeParameters,
+    //     PersistMode.kPersistParameters);
     
+    m_drivingSpark.configure(
+      name.equals("rearRight") 
+          ? Configs.MAXSwerveModule.rearRightDrivingConfig 
+          : Configs.MAXSwerveModule.drivingConfig,
+      ResetMode.kResetSafeParameters,
+      PersistMode.kPersistParameters);
+      
+
+
     // Simple turning motor config - no closed loop since we're doing it in software
     m_turningSpark.configure(Configs.MAXSwerveModule.turningConfig, ResetMode.kResetSafeParameters,
         PersistMode.kPersistParameters);
