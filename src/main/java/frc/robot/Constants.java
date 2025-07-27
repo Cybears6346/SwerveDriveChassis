@@ -43,8 +43,7 @@ public final class Constants {
     public static final double kFrontLeftChassisAngularOffset = Math.PI / 2;
     public static final double kFrontRightChassisAngularOffset = Math.PI/6;
     public static final double kBackLeftChassisAngularOffset =  Math.PI - Math.PI/6;
-    public static final double kBackRightChassisAngularOffset =  Math.PI + Math.PI/12; //DRIVING MOTOR DOESNT SPIN WITH THE REST
-
+    public static final double kBackRightChassisAngularOffset =  Math.PI + Math.PI/12;
   // SPARK FLEX CAN IDs
     public static final int kFrontLeftDrivingCanId = 1;
     public static final int kRearLeftDrivingCanId = 3;
