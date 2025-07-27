@@ -8,6 +8,8 @@ import frc.robot.Constants.ModuleConstants;
 
 public final class Configs {
     public static final class MAXSwerveModule {
+
+        //ONLY FOR IF NO MOTORS NEED TO BE INVERTED
         public static final SparkFlexConfig drivingConfig = new SparkFlexConfig();
         public static final SparkFlexConfig turningConfig = new SparkFlexConfig();
 
