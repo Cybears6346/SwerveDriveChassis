@@ -24,25 +24,25 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kFrontLeftDrivingCanId,
       DriveConstants.kFrontLeftTurningCanId,
       DriveConstants.kFrontLeftChassisAngularOffset,
-      DriveConstants.kFrontLeftAnalogEncoder);
+      DriveConstants.kFrontLeftAnalogEncoder, "frontLeft");
 
   private final MAXSwerveModule m_frontRight = new MAXSwerveModule(
       DriveConstants.kFrontRightDrivingCanId,
       DriveConstants.kFrontRightTurningCanId,
       DriveConstants.kFrontRightChassisAngularOffset,
-      DriveConstants.kFrontRightAnalogEncoder);
+      DriveConstants.kFrontRightAnalogEncoder, "frontRight");
 
   private final MAXSwerveModule m_rearLeft = new MAXSwerveModule(
       DriveConstants.kRearLeftDrivingCanId,
       DriveConstants.kRearLeftTurningCanId,
       DriveConstants.kBackLeftChassisAngularOffset,
-      DriveConstants.kRearLeftAnalogEncoder);
+      DriveConstants.kRearLeftAnalogEncoder, "rearLeft");
 
   private final MAXSwerveModule m_rearRight = new MAXSwerveModule(
       DriveConstants.kRearRightDrivingCanId,
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kBackRightChassisAngularOffset,
-      DriveConstants.kRearRightAnalogEncoder);
+      DriveConstants.kRearRightAnalogEncoder, "rearRight");
 
   // The gyro sensor
   private final Pigeon2 m_gyro = new Pigeon2(DriveConstants.kPigeonCanId,"rio");

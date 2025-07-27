@@ -26,6 +26,7 @@ import frc.robot.Configs;
 public class MAXSwerveModule {
   private final SparkFlex m_drivingSpark;
   private final SparkFlex m_turningSpark;
+  private final String moduleName;
 
   private final RelativeEncoder m_drivingEncoder;
   private final AnalogEncoder m_turningEncoder; // Only use the external analog encoder
@@ -43,7 +44,7 @@ public class MAXSwerveModule {
    * encoder, and PID controller. This configuration uses only the external
    * analog absolute encoder for turning control.
    */
-  public MAXSwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset, int analogEncoderPort) {
+  public MAXSwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset, int analogEncoderPort, String name) {
     m_drivingSpark = new SparkFlex(drivingCANId, MotorType.kBrushless);
     m_turningSpark = new SparkFlex(turningCANId, MotorType.kBrushless);
 
@@ -51,6 +52,7 @@ public class MAXSwerveModule {
     
     // Create analog encoder using the specified analog port
     m_turningEncoder = new AnalogEncoder(analogEncoderPort, 2 * Math.PI, 0.0);
+    moduleName = name;
 
     m_drivingClosedLoopController = m_drivingSpark.getClosedLoopController();
     
@@ -134,7 +136,7 @@ public class MAXSwerveModule {
   
   /**
    * Get the turning PID controller for tuning.
-   * @return The turning PID controller
+   * @return The turning PID controllers
    */
   public PIDController getTurningPIDController() {
     return m_turningPIDController;
@@ -145,8 +147,9 @@ public class MAXSwerveModule {
     double correctedAngle = absoluteAngle - m_chassisAngularOffset;
     correctedAngle = MathUtil.inputModulus(correctedAngle, 0, 2 * Math.PI);
     m_desiredState = new SwerveModuleState(0.0, new Rotation2d(0));
-    double turnOutput = m_turningPIDController.calculate(correctedAngle, 0.0);
-    m_turningSpark.set(turnOutput);
-    System.out.println("Resetting modules to absolute...");
+    //double turnOutput = m_turningPIDController.calculate(correctedAngle, 0.0);
+   // m_turningSpark.set(turnOutput);
+    System.out.println("Raw encoder: " + moduleName + m_turningEncoder.get());
+    System.out.println("Offset: " +moduleName + m_chassisAngularOffset);
   }
 }
