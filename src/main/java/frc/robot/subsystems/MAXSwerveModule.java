@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -78,8 +79,7 @@ public class MAXSwerveModule {
    */
   public SwerveModuleState getState() {
     // Apply chassis angular offset to get position relative to the chassis
-    return new SwerveModuleState(m_drivingEncoder.getVelocity(),
-        new Rotation2d(m_turningEncoder.get() - m_chassisAngularOffset));
+    return new SwerveModuleState(m_drivingEncoder.getVelocity(),new Rotation2d(m_turningEncoder.get() - m_chassisAngularOffset));
   }
 
   /**
@@ -138,5 +138,14 @@ public class MAXSwerveModule {
    */
   public PIDController getTurningPIDController() {
     return m_turningPIDController;
+  }
+
+  public void resetToAbsolute() {
+    double absoluteAngle = m_turningEncoder.get(); 
+    double correctedAngle = absoluteAngle - m_chassisAngularOffset;
+    correctedAngle = MathUtil.inputModulus(correctedAngle, 0, 2 * Math.PI);
+    m_desiredState = new SwerveModuleState(0.0, new Rotation2d(0));
+    double turnOutput = m_turningPIDController.calculate(correctedAngle, 0.0);
+    m_turningSpark.set(turnOutput);
   }
 }

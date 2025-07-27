@@ -185,4 +185,10 @@ public class DriveSubsystem extends SubsystemBase {
   public double getTurnRate() {
     return m_gyro.getAngularVelocityZWorld().getValueAsDouble() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   }
+  public void resetModulesToAbsolute() {
+    m_frontLeft.resetToAbsolute();
+    m_frontRight.resetToAbsolute();
+    m_rearLeft.resetToAbsolute();
+    m_rearRight.resetToAbsolute();
+  }
 }
