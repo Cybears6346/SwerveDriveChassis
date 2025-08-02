@@ -98,7 +98,7 @@ public class RobotContainer {
     //     DriverStation.reportError("Failed to load PathPlanner RobotConfig: " + e.getMessage(), true);
     // }
 
-    RobotConfig config;
+    RobotConfig config = null;
     try{
       config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
@@ -107,28 +107,22 @@ public class RobotContainer {
     }
 
     AutoBuilder.configure(
-            m_robotDrive::getPose, // Robot pose supplier
-            m_robotDrive::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
-            m_robotDrive::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            m_robotDrive::driveWithFeedforward, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-            new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
-            ),
-            config, // The robot configuration
-            () -> {
-              // Boolean supplier that controls when the path will be mirrored for the red alliance
-              // This will flip the path being followed to the red side of the field.
-              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+    m_robotDrive::getPose,
+    m_robotDrive::resetOdometry,
+    m_robotDrive::getChassisSpeeds,
+    m_robotDrive::driveWithFeedforward,
+    new PPHolonomicDriveController(
+        new PIDConstants(5.0, 0.0, 0.0),
+        new PIDConstants(5.0, 0.0, 0.0)
+    ),
+    config,
+    () -> {
+        var alliance = DriverStation.getAlliance();
+        return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
+    },
+    m_robotDrive // ✅ This is the correct subsystem requirement
+);
 
-              var alliance = DriverStation.getAlliance();
-              if (alliance.isPresent()) {
-                return alliance.get() == DriverStation.Alliance.Red;
-              }
-              return false;
-            },
-            this // Reference to this subsystem to set requirements
-    );
   
     autoChooser.setDefaultOption("Test Auto BOTH", new PathPlannerAuto("Test Auto BOTH"));
     autoChooser.addOption("Test Auto 1", new PathPlannerAuto("Test Auto 1"));
