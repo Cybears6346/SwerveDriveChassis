@@ -129,8 +129,12 @@ try {
    */
 
    //Method for robotinit in robot.java
-  public DriveSubsystem getDriveSubsystem(){
-    return m_robotDrive;
+//   public DriveSubsystem getDriveSubsystem(){
+//     return m_robotDrive;
+//   }
+
+  public void resetModules(){
+    m_robotDrive.resetModulesToAbsolute();
   }
 
   private void configureButtonBindings() {

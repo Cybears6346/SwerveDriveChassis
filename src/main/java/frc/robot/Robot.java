@@ -30,7 +30,7 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
     //Timer.delay(1.0); OPTIONAL TEST FIRST
-    m_robotContainer.getDriveSubsystem().resetModulesToAbsolute(); //Reset modules on boot
+    m_robotContainer.resetModules(); //Reset modules on boot
   }
 
   /**
