@@ -112,8 +112,9 @@ try {
     DriverStation.reportError("Failed to load RobotConfig from GUI settings: " + e.getMessage(), false);
     e.printStackTrace();
 }
-    autoChooser.setDefaultOption("Test Auto 2", new PathPlannerAuto("Test Auto 2"));
-    autoChooser.addOption("Test Auto 1", new PathPlannerAuto("Test Auto 1"));
+    autoChooser.setDefaultOption("Test Auto", new PathPlannerAuto("Test Auto"));
+    autoChooser.addOption("TestPath", new PathPlannerAuto("TestPath"));
+    autoChooser.addOption("TestPath 2", new PathPlannerAuto("TestPath 2"));
     // SmartDashboard.putData(autoChooser); TEST
     SmartDashboard.putData("Auto Selector", autoChooser);
   }
