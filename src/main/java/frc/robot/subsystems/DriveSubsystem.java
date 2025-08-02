@@ -17,6 +17,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import com.ctre.phoenix6.hardware.Pigeon2;
+import com.pathplanner.lib.util.DriveFeedforwards;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -139,6 +142,18 @@ public class DriveSubsystem extends SubsystemBase {
       pose);
   }
 
+public void driveWithFeedforward(ChassisSpeeds speeds, DriveFeedforwards feedforwards) {
+    drive(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond, false); 
+}
+
+public ChassisSpeeds getChassisSpeeds() {
+  return DriveConstants.kDriveKinematics.toChassisSpeeds(
+      m_frontLeft.getState(),
+      m_frontRight.getState(),
+      m_rearLeft.getState(),
+      m_rearRight.getState()
+  );
+}
   /**
    * Method to drive the robot using joystick info.
    *

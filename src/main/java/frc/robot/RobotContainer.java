@@ -23,17 +23,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
+import java.io.IOException;
 import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.auto.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerPath;  //This is if you're using the path, I am calling the auto in getAutonomousCommand Method
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import org.json.simple.parser.ParseException;
+
 
 
 /*
@@ -69,8 +73,27 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDriveDeadband),
                 true),
             m_robotDrive));
-  }
 
+    try {
+        RobotConfig config = RobotConfig.fromGUISettings();
+        AutoBuilder.configure(
+            m_robotDrive::getPose,
+            m_robotDrive::resetOdometry,
+            m_robotDrive::getChassisSpeeds,
+            m_robotDrive::driveWithFeedforward,
+            new PPHolonomicDriveController(
+                new PIDConstants(AutoConstants.kPXController, 0.0, 0.0),
+                new PIDConstants(AutoConstants.kPThetaController, 0.0, 0.0)
+            ),
+            config,
+            () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+            m_robotDrive
+        );
+    } 
+    catch (IOException | ParseException e) {
+        DriverStation.reportError("Failed to load PathPlanner RobotConfig: " + e.getMessage(), true);
+    }
+  }
   /**
    * Use this method to define your button->command mappings. Buttons can be
    * created by
@@ -98,44 +121,49 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // Create config for trajectory
-    TrajectoryConfig config = new TrajectoryConfig(
-        AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(DriveConstants.kDriveKinematics);
 
-    // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-        // Start at the origin facing the +X direction
-        new Pose2d(0, 0, new Rotation2d(0)),
-        // Pass through these two interior waypoints, making an 's' curve path
-        List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-        // End 3 meters straight ahead of where we started, facing forward
-        new Pose2d(3, 0, new Rotation2d(0)),
-        config);
+   public Command getAutonomousCommand() {
+    return new PathPlannerAuto("Test Auto"); 
+}
 
-    var thetaController = new ProfiledPIDController(
-        AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
+//   public Command getAutonomousCommand() { TEST
+//     // Create config for trajectory
+//     TrajectoryConfig config = new TrajectoryConfig(
+//         AutoConstants.kMaxSpeedMetersPerSecond,
+//         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+//         // Add kinematics to ensure max speed is actually obeyed
+//         .setKinematics(DriveConstants.kDriveKinematics);
 
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-        exampleTrajectory,
-        m_robotDrive::getPose, // Functional interface to feed supplier
-        DriveConstants.kDriveKinematics,
+//     // An example trajectory to follow. All units in meters.
+//     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
+//         // Start at the origin facing the +X direction
+//         new Pose2d(0, 0, new Rotation2d(0)),
+//         // Pass through these two interior waypoints, making an 's' curve path
+//         List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+//         // End 3 meters straight ahead of where we started, facing forward
+//         new Pose2d(3, 0, new Rotation2d(0)),
+//         config);
 
-        // Position controllers
-        new PIDController(AutoConstants.kPXController, 0, 0),
-        new PIDController(AutoConstants.kPYController, 0, 0),
-        thetaController,
-        m_robotDrive::setModuleStates,
-        m_robotDrive);
+//     var thetaController = new ProfiledPIDController(
+//         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
+//     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    // Reset odometry to the starting pose of the trajectory.
-    m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+//     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
+//         exampleTrajectory,
+//         m_robotDrive::getPose, // Functional interface to feed supplier
+//         DriveConstants.kDriveKinematics,
 
-    // Run path following command, then stop at the end.
-    return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false));
-  }
+//         // Position controllers
+//         new PIDController(AutoConstants.kPXController, 0, 0),
+//         new PIDController(AutoConstants.kPYController, 0, 0),
+//         thetaController,
+//         m_robotDrive::setModuleStates,
+//         m_robotDrive);
+
+//     // Reset odometry to the starting pose of the trajectory.
+//     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
+
+//     // Run path following command, then stop at the end.
+//     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false));
+//   }
 }
