@@ -4,41 +4,23 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.DriveSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
-import java.io.IOException;
-import java.util.List;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.PathPlannerPath;  //This is if you're using the path, I am calling the auto in getAutonomousCommand Method
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import org.json.simple.parser.ParseException;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.DriveSubsystem;
 
 
 
@@ -98,32 +80,59 @@ public class RobotContainer {
     //     DriverStation.reportError("Failed to load PathPlanner RobotConfig: " + e.getMessage(), true);
     // }
 
-    RobotConfig config = null;
-    try{
-      config = RobotConfig.fromGUISettings();
-    } catch (Exception e) {
-      // Handle exception as needed
-      e.printStackTrace();
-    }
+//     RobotConfig config = null;
+//     try{
+//       config = RobotConfig.fromGUISettings();
+//     } catch (Exception e) {
+//       // Handle exception as needed
+//       e.printStackTrace();
+//     }
 
+//     AutoBuilder.configure(
+//     m_robotDrive::getPose,
+//     m_robotDrive::resetOdometry,
+//     m_robotDrive::getChassisSpeeds,
+//     m_robotDrive::driveWithFeedforward,
+//     new PPHolonomicDriveController(
+//         new PIDConstants(5.0, 0.0, 0.0),
+//         new PIDConstants(5.0, 0.0, 0.0)
+//     ),
+//     config,
+//     () -> {
+//         var alliance = DriverStation.getAlliance();
+//         return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
+//     },
+//     m_robotDrive
+// );
+
+RobotConfig config;
+try {
+    config = RobotConfig.fromGUISettings();
+
+    // Only configure AutoBuilder if config loads successfully
     AutoBuilder.configure(
-    m_robotDrive::getPose,
-    m_robotDrive::resetOdometry,
-    m_robotDrive::getChassisSpeeds,
-    m_robotDrive::driveWithFeedforward,
-    new PPHolonomicDriveController(
-        new PIDConstants(5.0, 0.0, 0.0),
-        new PIDConstants(5.0, 0.0, 0.0)
-    ),
-    config,
-    () -> {
-        var alliance = DriverStation.getAlliance();
-        return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
-    },
-    m_robotDrive // ✅ This is the correct subsystem requirement
-);
+        m_robotDrive::getPose,
+        m_robotDrive::resetOdometry,
+        m_robotDrive::getChassisSpeeds,
+        m_robotDrive::driveWithFeedforward,
+        new PPHolonomicDriveController(
+            new PIDConstants(5.0, 0.0, 0.0),
+            new PIDConstants(5.0, 0.0, 0.0)
+        ),
+        config,
+        () -> {
+            var alliance = DriverStation.getAlliance();
+            return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
+        },
+        m_robotDrive
+    );
+} catch (Exception e) {
+    DriverStation.reportError("Failed to load RobotConfig from GUI settings: " + e.getMessage(), false);
+    e.printStackTrace();
+}
 
-  
+
+
     autoChooser.setDefaultOption("Test Auto BOTH", new PathPlannerAuto("Test Auto BOTH"));
     autoChooser.addOption("Test Auto 1", new PathPlannerAuto("Test Auto 1"));
     autoChooser.addOption("Test Auto 2", new PathPlannerAuto("Test Auto 2"));
