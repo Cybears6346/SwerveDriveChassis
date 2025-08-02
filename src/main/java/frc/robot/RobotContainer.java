@@ -62,26 +62,6 @@ public class RobotContainer {
                 true),
             m_robotDrive));
 
-    // try {
-    //     RobotConfig config = RobotConfig.fromGUISettings();
-    //     AutoBuilder.configure(
-    //         m_robotDrive::getPose,
-    //         m_robotDrive::resetOdometry,
-    //         m_robotDrive::getChassisSpeeds,
-    //         m_robotDrive::driveWithFeedforward,
-    //         new PPHolonomicDriveController(
-    //             new PIDConstants(AutoConstants.kPXController, 0.0, 0.0),
-    //             new PIDConstants(AutoConstants.kPThetaController, 0.0, 0.0)
-    //         ),
-    //         config,
-    //         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
-    //         m_robotDrive
-    //     );
-    // } 
-    // catch (IOException | ParseException e) {
-    //     DriverStation.reportError("Failed to load PathPlanner RobotConfig: " + e.getMessage(), true);
-    // }
-
 //     RobotConfig config = null;
 //     try{
 //       config = RobotConfig.fromGUISettings();
@@ -132,9 +112,6 @@ try {
     DriverStation.reportError("Failed to load RobotConfig from GUI settings: " + e.getMessage(), false);
     e.printStackTrace();
 }
-
-
-
     autoChooser.setDefaultOption("Test Auto BOTH", new PathPlannerAuto("Test Auto BOTH"));
     autoChooser.addOption("Test Auto 1", new PathPlannerAuto("Test Auto 1"));
     autoChooser.addOption("Test Auto 2", new PathPlannerAuto("Test Auto 2"));
