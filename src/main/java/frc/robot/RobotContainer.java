@@ -44,7 +44,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
-    m_robotDrive.resetModulesToAbsolute(); 
+    //m_robotDrive.resetModulesToAbsolute();  TEST OUT INIT METHOD FIRST IN ROBOT.JAVA
     // Configure default commands
     m_robotDrive.setDefaultCommand(
         // The left stick controls translation of the robot.
@@ -69,6 +69,12 @@ public class RobotContainer {
    * passing it to a
    * {@link JoystickButton}.
    */
+
+   //Method for robotinit in robot.java
+  public DriveSubsystem getDriveSubsystem(){
+    return m_robotDrive;
+  }
+
   private void configureButtonBindings() {
     new JoystickButton(m_driverController, Button.kRightBumper.value)
         .whileTrue(new RunCommand(
