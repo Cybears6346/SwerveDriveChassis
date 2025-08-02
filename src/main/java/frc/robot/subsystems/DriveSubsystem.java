@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -47,17 +49,31 @@ public class DriveSubsystem extends SubsystemBase {
   // The gyro sensor
   private final Pigeon2 m_gyro = new Pigeon2(DriveConstants.kPigeonCanId,"rio");
 
-  // Odometry class for tracking robot pose
-  SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
-      DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
-      new SwerveModulePosition[] {
-          m_frontLeft.getPosition(),
-          m_frontRight.getPosition(),
-          m_rearLeft.getPosition(),
-          m_rearRight.getPosition()
-      });
+  // Odometry class for tracking robot pose (TEST FIRST)
+  // SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
+  //     DriveConstants.kDriveKinematics,
+  //     Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
+  //     new SwerveModulePosition[] {
+  //         m_frontLeft.getPosition(),
+  //         m_frontRight.getPosition(),
+  //         m_rearLeft.getPosition(),
+  //         m_rearRight.getPosition()
+  //     });
 
+      //SwerveDrivePoseEstimator for vision processing
+  SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
+    DriveConstants.kDriveKinematics,
+    Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()), 
+    new SwerveModulePosition[] {
+        m_frontLeft.getPosition(),
+        m_frontRight.getPosition(),
+        m_rearLeft.getPosition(),
+        m_rearRight.getPosition()
+    },
+    new Pose2d(),                     
+    VecBuilder.fill(0.1, 0.1, 0.1),   
+    VecBuilder.fill(0.9, 0.9, 1.5)     
+  );
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     // Usage reporting for MAXSwerve template
@@ -66,15 +82,25 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // Update the odometry in the periodic block
-    m_odometry.update(
-        Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
-        new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-        });
+    // Update the odometry in the periodic block (TEST FIRST)
+    // m_odometry.update(  
+    //     Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
+    //     new SwerveModulePosition[] {
+    //         m_frontLeft.getPosition(),
+    //         m_frontRight.getPosition(),
+    //         m_rearLeft.getPosition(),
+    //         m_rearRight.getPosition()
+    //     });
+
+    m_poseEstimator.update(
+      Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
+      new SwerveModulePosition[] {
+        m_frontLeft.getPosition(),
+        m_frontRight.getPosition(),
+        m_rearLeft.getPosition(),
+        m_rearRight.getPosition()
+      }
+    );
   }
 
   /**
@@ -83,7 +109,8 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    //return m_odometry.getPoseMeters(); TEST
+    return m_poseEstimator.getEstimatedPosition();
   }
 
   /**
@@ -92,15 +119,24 @@ public class DriveSubsystem extends SubsystemBase {
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    m_odometry.resetPosition(
-        Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
-        new SwerveModulePosition[] {
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_rearLeft.getPosition(),
-            m_rearRight.getPosition()
-        },
-        pose);
+    // m_odometry.resetPosition(  TEST
+    //     Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
+    //     new SwerveModulePosition[] {
+    //         m_frontLeft.getPosition(),
+    //         m_frontRight.getPosition(),
+    //         m_rearLeft.getPosition(),
+    //         m_rearRight.getPosition()
+    //     },
+    //     pose);
+    m_poseEstimator.resetPosition(
+      Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()),
+      new SwerveModulePosition[] {
+        m_frontLeft.getPosition(),
+        m_frontRight.getPosition(),
+        m_rearLeft.getPosition(),
+        m_rearRight.getPosition()
+      },
+      pose);
   }
 
   /**
@@ -129,6 +165,16 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
+  }
+
+  //Limelights later on
+  public void addVisionMeasurement(Pose2d visionPose, double timestampSeconds) {
+    m_poseEstimator.addVisionMeasurement(visionPose, timestampSeconds);
+  }  
+
+  //Logging 
+  public SwerveDrivePoseEstimator getPoseEstimator() {
+    return m_poseEstimator;
   }
 
   /**
