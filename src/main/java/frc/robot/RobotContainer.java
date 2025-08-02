@@ -15,6 +15,8 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -52,6 +54,8 @@ public class RobotContainer {
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+
+  SendableChooser<Command> autoChooser = new SendableChooser<>();
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -93,6 +97,12 @@ public class RobotContainer {
     catch (IOException | ParseException e) {
         DriverStation.reportError("Failed to load PathPlanner RobotConfig: " + e.getMessage(), true);
     }
+
+    autoChooser.setDefaultOption("Test Auto BOTH", new PathPlannerAuto("Test Auto BOTH"));
+    autoChooser.addOption("Test Auto 1", new PathPlannerAuto("Test Auto 1"));
+    autoChooser.addOption("Test Auto 2", new PathPlannerAuto("Test Auto 2"));
+    // SmartDashboard.putData(autoChooser); TEST
+    SmartDashboard.putData("Auto Selector", autoChooser);
   }
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -123,8 +133,13 @@ public class RobotContainer {
    */
 
    public Command getAutonomousCommand() {
-    return new PathPlannerAuto("Test Auto"); 
+    return autoChooser.getSelected();
 }
+
+
+//    public Command getAutonomousCommand() { TEST
+//     return new PathPlannerAuto("Test Auto"); 
+// }
 
 //   public Command getAutonomousCommand() { TEST
 //     // Create config for trajectory
