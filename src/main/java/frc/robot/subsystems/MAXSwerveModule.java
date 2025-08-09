@@ -82,7 +82,7 @@ public class MAXSwerveModule {
         PersistMode.kPersistParameters);
 
     m_chassisAngularOffset = chassisAngularOffset;
-    m_desiredState.angle = new Rotation2d(m_turningEncoder.get() - m_chassisAngularOffset);
+    m_desiredState.angle = new Rotation2d(getModuleAngleRad());
     m_drivingEncoder.setPosition(0);
   }
 
@@ -93,7 +93,7 @@ public class MAXSwerveModule {
    */
   public SwerveModuleState getState() {
     // Apply chassis angular offset to get position relative to the chassis
-    return new SwerveModuleState(m_drivingEncoder.getVelocity(),new Rotation2d(m_turningEncoder.get() - m_chassisAngularOffset));
+    return new SwerveModuleState(m_drivingEncoder.getVelocity(),new Rotation2d(getModuleAngleRad()));
   }
 
   /**
@@ -105,7 +105,7 @@ public class MAXSwerveModule {
     // Apply chassis angular offset to get position relative to the chassis
     return new SwerveModulePosition(
         m_drivingEncoder.getPosition(),
-        new Rotation2d(m_turningEncoder.get() - m_chassisAngularOffset));
+        new Rotation2d(getModuleAngleRad()));
   }
 
   /**
@@ -114,30 +114,16 @@ public class MAXSwerveModule {
    * @param desiredState Desired state with speed and angle.
    */
   public void setDesiredState(SwerveModuleState desiredState) {
-    // Apply chassis angular offset to the desired state
-    SwerveModuleState correctedDesiredState = new SwerveModuleState();
-    correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
-    correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
-
-    // Optimize the reference state to avoid spinning further than 90 degrees
-    correctedDesiredState.optimize(new Rotation2d(m_turningEncoder.get()));
-
-    // Command driving motor using hardware PID
-    m_drivingClosedLoopController.setReference(correctedDesiredState.speedMetersPerSecond, ControlType.kVelocity);
-    
-    // Command turning motor using software PID
-    double currentPosition = m_turningEncoder.get();
-    double targetPosition = correctedDesiredState.angle.getRadians();
-    
-    // Calculate PID output
-    double pidOutput = m_turningPIDController.calculate(currentPosition, targetPosition);
-    
-    // Clamp output to [-1, 1] and apply to motor
-    pidOutput = Math.max(-1.0, Math.min(1.0, pidOutput));
-    m_turningSpark.set(pidOutput);
+ 
+    desiredState.optimize(new Rotation2d(getModuleAngleRad()));
+  
+    m_drivingClosedLoopController.setReference(desiredState.speedMetersPerSecond, ControlType.kVelocity);
+  
+    double turnOut = m_turningPIDController.calculate(getModuleAngleRad(), desiredState.angle.getRadians());
+    m_turningSpark.set(MathUtil.clamp(turnOut, -1.0, 1.0));
 
     m_desiredState = desiredState;
-  }
+  }   
 
   /** Zeroes all the SwerveModule encoders. */
   public void resetEncoders() {
@@ -154,13 +140,18 @@ public class MAXSwerveModule {
     return m_turningPIDController;
   }
 
+  private double getModuleAngleRad() {
+    return MathUtil.inputModulus(m_turningEncoder.get() - m_chassisAngularOffset, 0, 2*Math.PI);
+  }
+  
   public void resetToAbsolute() {
     double absoluteAngle = m_turningEncoder.get(); 
     double correctedAngle = absoluteAngle - m_chassisAngularOffset;
     correctedAngle = MathUtil.inputModulus(correctedAngle, 0, 2 * Math.PI);
-    m_desiredState = new SwerveModuleState(0.0, new Rotation2d(0));
-    double turnOutput = m_turningPIDController.calculate(correctedAngle, 0.0);
-    m_turningSpark.set(turnOutput);
+    //Temp
+    // m_desiredState = new SwerveModuleState(0.0, new Rotation2d(0));
+    // double turnOutput = m_turningPIDController.calculate(correctedAngle, 0.0);
+    // m_turningSpark.set(turnOutput);
     System.out.println("Raw encoder: " + moduleName + m_turningEncoder.get());
     System.out.println("Offset: " +moduleName + m_chassisAngularOffset);
   }

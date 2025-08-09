@@ -39,7 +39,7 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
         new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
-    // Angular offsets of the modules relative to the chassis in radians
+    // Angular offsets of the modules relative to the chassis in radians  (Gotta Measure them properly)
     public static final double kFrontLeftChassisAngularOffset = Math.PI / 2;
     public static final double kFrontRightChassisAngularOffset = Math.PI/6;
     public static final double kBackLeftChassisAngularOffset =  Math.PI - Math.PI/6;
