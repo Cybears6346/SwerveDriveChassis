@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 
 
 
@@ -62,61 +64,36 @@ public class RobotContainer {
                 true),
             m_robotDrive));
 
-//     RobotConfig config = null;
-//     try{
-//       config = RobotConfig.fromGUISettings();
-//     } catch (Exception e) {
-//       // Handle exception as needed
-//       e.printStackTrace();
-//     }
+    RobotConfig config = null;
+    try{
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      // Handle exception as needed
+      e.printStackTrace();
+    }
 
-//     AutoBuilder.configure(
-//     m_robotDrive::getPose,
-//     m_robotDrive::resetOdometry,
-//     m_robotDrive::getChassisSpeeds,
-//     m_robotDrive::driveWithFeedforward,
-//     new PPHolonomicDriveController(
-//         new PIDConstants(5.0, 0.0, 0.0),
-//         new PIDConstants(5.0, 0.0, 0.0)
-//     ),
-//     config,
-//     () -> {
-//         var alliance = DriverStation.getAlliance();
-//         return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
-//     },
-//     m_robotDrive
-// );
-
-RobotConfig config;
-try {
-    config = RobotConfig.fromGUISettings();
-
-    // Only configure AutoBuilder if config loads successfully
     AutoBuilder.configure(
-        m_robotDrive::getPose,
-        m_robotDrive::resetOdometry,
-        m_robotDrive::getChassisSpeeds,
-        m_robotDrive::driveWithFeedforward,
-        new PPHolonomicDriveController(
-            new PIDConstants(5.0, 0.0, 0.0),
-            new PIDConstants(5.0, 0.0, 0.0)
-        ),
-        config,
-        () -> {
-            var alliance = DriverStation.getAlliance();
-            return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
-        },
-        m_robotDrive
-    );
-} catch (Exception e) {
-    DriverStation.reportError("Failed to load RobotConfig from GUI settings: " + e.getMessage(), false);
-    e.printStackTrace();
-}
-    autoChooser.setDefaultOption("Test Auto", new PathPlannerAuto("Test Auto"));
+    m_robotDrive::getPose,
+    m_robotDrive::resetOdometry,
+    m_robotDrive::getChassisSpeeds,
+    m_robotDrive::driveWithFeedforward,
+    new PPHolonomicDriveController(
+        new PIDConstants(5.0, 0.0, 0.0),
+        new PIDConstants(5.0, 0.0, 0.0)
+    ),
+    config,
+    () -> {
+        var alliance = DriverStation.getAlliance();
+        return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
+    },
+    m_robotDrive
+);
+
+    autoChooser.setDefaultOption("Straight Auto", new PathPlannerAuto("Straight Auto"));
     autoChooser.addOption("TestPath", new PathPlannerAuto("TestPath"));
     autoChooser.addOption("TestPath 2", new PathPlannerAuto("TestPath 2"));
-    // SmartDashboard.putData(autoChooser); TEST
-    SmartDashboard.putData("Auto Selector", autoChooser);
+    SmartDashboard.putData(autoChooser);
+    //Shuffleboard.getTab("SmartDashboard").add("Auto Selector", autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
   }
   /**
    * Use this method to define your button->command mappings. Buttons can be
@@ -152,51 +129,5 @@ try {
 
    public Command getAutonomousCommand() {
     return autoChooser.getSelected();
-}
-
-
-//    public Command getAutonomousCommand() { TEST
-//     return new PathPlannerAuto("Test Auto"); 
-// }
-
-//   public Command getAutonomousCommand() { TEST
-//     // Create config for trajectory
-//     TrajectoryConfig config = new TrajectoryConfig(
-//         AutoConstants.kMaxSpeedMetersPerSecond,
-//         AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-//         // Add kinematics to ensure max speed is actually obeyed
-//         .setKinematics(DriveConstants.kDriveKinematics);
-
-//     // An example trajectory to follow. All units in meters.
-//     Trajectory exampleTrajectory = TrajectoryGenerator.generateTrajectory(
-//         // Start at the origin facing the +X direction
-//         new Pose2d(0, 0, new Rotation2d(0)),
-//         // Pass through these two interior waypoints, making an 's' curve path
-//         List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-//         // End 3 meters straight ahead of where we started, facing forward
-//         new Pose2d(3, 0, new Rotation2d(0)),
-//         config);
-
-//     var thetaController = new ProfiledPIDController(
-//         AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-//     thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-//     SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-//         exampleTrajectory,
-//         m_robotDrive::getPose, // Functional interface to feed supplier
-//         DriveConstants.kDriveKinematics,
-
-//         // Position controllers
-//         new PIDController(AutoConstants.kPXController, 0, 0),
-//         new PIDController(AutoConstants.kPYController, 0, 0),
-//         thetaController,
-//         m_robotDrive::setModuleStates,
-//         m_robotDrive);
-
-//     // Reset odometry to the starting pose of the trajectory.
-//     m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose());
-
-//     // Run path following command, then stop at the end.
-//     return swerveControllerCommand.andThen(() -> m_robotDrive.drive(0, 0, 0, false));
-//   }
+    }
 }
