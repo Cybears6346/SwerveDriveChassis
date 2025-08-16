@@ -125,11 +125,10 @@ public class RobotContainer {
             () -> m_robotDrive.setX(),
             m_robotDrive));
 
-    new JoystickButton(m_driverController, Button.kY.value)
-      .onTrue(new InstantCommand(() -> m_robotDrive.zeroToAlliance()));
-
-      new JoystickButton(m_driverController, Button.kB.value)
-      .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+    // new JoystickButton(m_driverController, Button.kY.value).onTrue(new InstantCommand(() -> m_robotDrive.zeroToAlliance()));
+    // new JoystickButton(m_driverController, Button.kB.value).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+    new JoystickButton(m_driverController, Button.kY.value).onTrue(new InstantCommand(() -> m_robotDrive.zeroToAlliance()).ignoringDisable(true));
+    new JoystickButton(m_driverController, Button.kB.value).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()).ignoringDisable(true));
   }
 
   /**
