@@ -96,7 +96,6 @@ public class RobotContainer {
     autoChooser.addOption("TestPath", new PathPlannerAuto("TestPath"));
     autoChooser.addOption("TestPath 2", new PathPlannerAuto("TestPath 2"));
     SmartDashboard.putData(autoChooser);
-    //Shuffleboard.getTab("SmartDashboard").add("Auto Selector", autoChooser).withWidget(BuiltInWidgets.kComboBoxChooser);
   }
   /**
    * Use this method to define your button->command mappings. Buttons can be
