@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
@@ -106,9 +107,9 @@ public class RobotContainer {
    */
 
    //Method for robotinit in robot.java
-//   public DriveSubsystem getDriveSubsystem(){
-//     return m_robotDrive;
-//   }
+  public DriveSubsystem getDriveSubsystem(){
+    return m_robotDrive;
+  }
 
   public void resetModules(){
     m_robotDrive.resetModulesToAbsolute();
@@ -123,6 +124,12 @@ public class RobotContainer {
         .whileTrue(new RunCommand(
             () -> m_robotDrive.setX(),
             m_robotDrive));
+
+    new JoystickButton(m_driverController, Button.kY.value)
+      .onTrue(new InstantCommand(() -> m_robotDrive.zeroToAlliance()));
+
+      new JoystickButton(m_driverController, Button.kB.value)
+      .onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
   }
 
   /**
