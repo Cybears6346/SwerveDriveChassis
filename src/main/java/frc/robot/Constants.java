@@ -39,10 +39,10 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
         new Translation2d(-kWheelBase / 2, -kTrackWidth / 2));
 
-    // Angular offsets of the modules relative to the chassis in radians  (Gotta Measure them properly) THESE WILL NEED TO CHANGE IF ANYTHING MECHANICAL CHANGES
-    public static final double kFrontLeftChassisAngularOffset = 4.682;//Math.PI / 2
-    public static final double kFrontRightChassisAngularOffset = 3.627; //Math.PI/6
-    public static final double kBackLeftChassisAngularOffset = 5.804; //Math.PI - Math.PI/6
+    // Angular offsets of the modules relative to the chassis in radians  (Gotta Measure them properly) THESE WILL NEED TO CHANGE IF ANYTHING MECHANICAL CHANGES; IF MOTORS SPIN IN WRONG DIRECTION MOST LIKLY OFFSET BY PI
+    public static final double kFrontLeftChassisAngularOffset = 4.682 +Math.PI;//Math.PI / 2
+    public static final double kFrontRightChassisAngularOffset = 3.627 + Math.PI; //Math.PI/6
+    public static final double kBackLeftChassisAngularOffset = 5.804 +Math.PI ; //Math.PI - Math.PI/6
     public static final double kBackRightChassisAngularOffset =  3.330;//Math.PI + Math.PI/12
   // SPARK FLEX CAN IDs
     public static final int kFrontLeftDrivingCanId = 1;
