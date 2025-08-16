@@ -152,7 +152,16 @@ public class MAXSwerveModule {
     // m_desiredState = new SwerveModuleState(0.0, new Rotation2d(0));
     // double turnOutput = m_turningPIDController.calculate(correctedAngle, 0.0);
     // m_turningSpark.set(turnOutput);
-    System.out.println("Raw encoder: " + moduleName + m_turningEncoder.get());
-    System.out.println("Offset: " +moduleName + m_chassisAngularOffset);
   }
+
+  //CALIBRATION METHODS; NOT NECESSARY FOR COMPETITION
+
+  public double getAbsAngleRadians() {
+    return MathUtil.inputModulus(m_turningEncoder.get(), 0, 2 * Math.PI);
+  }
+  
+  public void holdForwardZero() {
+    setDesiredState(new SwerveModuleState(0.0, new Rotation2d(0.0)));
+  }
+
 }

@@ -24,6 +24,7 @@ import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 
 public class DriveSubsystem extends SubsystemBase {
@@ -272,7 +273,7 @@ public ChassisSpeeds getChassisSpeeds() {
         },
         pose);
   
-   // m_fieldYawOffset = getHeading().minus(pose.getRotation()); TEST
+   // m_fieldYawOffset = getHeading().minus(pose.getRotation()); 
   }
   
 
@@ -301,4 +302,25 @@ public ChassisSpeeds getChassisSpeeds() {
     m_rearLeft.resetToAbsolute();
     m_rearRight.resetToAbsolute();
   }
+
+  //CALIBRATION METHODS; NOT NECESSARY FOR COMPETITION
+  public void logAbsAngles() {
+    double fl = m_frontLeft.getAbsAngleRadians();
+    double fr = m_frontRight.getAbsAngleRadians();
+    double bl = m_rearLeft.getAbsAngleRadians();
+    double br = m_rearRight.getAbsAngleRadians();
+  
+    System.out.printf(
+        "AbsAngles (rad): FL=%.3f  FR=%.3f  BL=%.3f  BR=%.3f%n",
+        fl, fr, bl, br
+    );
+  }
+
+  public void pointAllModulesForward() {
+    m_frontLeft.holdForwardZero();
+    m_frontRight.holdForwardZero();
+    m_rearLeft.holdForwardZero();
+    m_rearRight.holdForwardZero();
+  }
+  
 }

@@ -13,6 +13,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -26,7 +27,8 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Pose2d;
 
 
 /*
@@ -129,7 +131,16 @@ public class RobotContainer {
     // new JoystickButton(m_driverController, Button.kB.value).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
     new JoystickButton(m_driverController, Button.kY.value).onTrue(new InstantCommand(() -> m_robotDrive.zeroToAlliance()).ignoringDisable(true));
     new JoystickButton(m_driverController, Button.kB.value).onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()).ignoringDisable(true));
-  }
+ 
+   //CALIBRATION BUTTONS; NOT NECESSARY FOR COMPETITION
+   new JoystickButton(m_driverController, Button.kA.value)
+  .onTrue(new InstantCommand(() -> m_robotDrive.logAbsAngles()).ignoringDisable(true));
+
+
+new JoystickButton(m_driverController, Button.kStart.value)
+  .onTrue(new InstantCommand(() -> m_robotDrive.pointAllModulesForward()).ignoringDisable(true));
+
+}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
