@@ -74,7 +74,7 @@ public class RobotContainer {
 
     AutoBuilder.configure(
     m_robotDrive::getPose,
-    m_robotDrive::resetOdometry,
+    m_robotDrive::resetPoseAllianceAware,
     m_robotDrive::getChassisSpeeds,
     m_robotDrive::driveWithFeedforward,
     new PPHolonomicDriveController(
@@ -112,6 +112,10 @@ public class RobotContainer {
 
   public void resetModules(){
     m_robotDrive.resetModulesToAbsolute();
+  }
+
+  public void zeroAlliance(){
+    m_robotDrive.zeroToAlliance();
   }
 
   private void configureButtonBindings() {

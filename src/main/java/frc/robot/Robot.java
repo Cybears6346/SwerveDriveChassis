@@ -19,7 +19,6 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -31,6 +30,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     //Timer.delay(1.0); OPTIONAL TEST FIRST
     m_robotContainer.resetModules(); //Reset modules on boot
+    m_robotContainer.zeroAlliance();
   }
 
   /**
@@ -84,6 +84,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
+    m_robotContainer.zeroAlliance();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

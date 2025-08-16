@@ -22,6 +22,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 
 public class DriveSubsystem extends SubsystemBase {
   // Create MAXSwerveModules with their corresponding analog encoder ports
@@ -52,6 +55,8 @@ public class DriveSubsystem extends SubsystemBase {
   // The gyro sensor
   private final Pigeon2 m_gyro = new Pigeon2(DriveConstants.kPigeonCanId,"rio");
 
+  private Rotation2d m_fieldYawOffset = new Rotation2d();
+
   // Odometry class for tracking robot pose (TEST FIRST)
   // SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
   //     DriveConstants.kDriveKinematics,
@@ -77,6 +82,7 @@ public class DriveSubsystem extends SubsystemBase {
     VecBuilder.fill(0.1, 0.1, 0.1),   
     VecBuilder.fill(0.9, 0.9, 1.5)     
   );
+  
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     // Usage reporting for MAXSwerve template
@@ -170,10 +176,10 @@ public ChassisSpeeds getChassisSpeeds() {
     double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-        fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()))
-            : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
+    fieldRelative
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(
+              xSpeedDelivered, ySpeedDelivered, rotDelivered, getFieldAdjustedHeading())
+        : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
@@ -234,9 +240,50 @@ public ChassisSpeeds getChassisSpeeds() {
    *
    * @return the robot's heading in degrees, from -180 to 180
    */
-  public double getHeading() {
-    return Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()).getDegrees();
+  // public double getHeading() {
+  //   return Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble()).getDegrees();
+  // }
+
+  public Rotation2d getHeading(){
+    return Rotation2d.fromDegrees(m_gyro.getYaw().getValueAsDouble());
   }
+
+  public Rotation2d getFieldAdjustedHeading() {
+    return getHeading().minus(m_fieldYawOffset);
+  }
+
+  public void zeroToAlliance() {
+    Alliance a = DriverStation.getAlliance().orElse(Alliance.Blue);
+    Rotation2d desiredForward = (a == Alliance.Blue) ? new Rotation2d() : Rotation2d.fromDegrees(180.0);
+    m_fieldYawOffset = getHeading().minus(desiredForward);
+  }
+
+  public void resetPoseAllianceAware(Pose2d pose) {
+    m_poseEstimator.resetPosition(
+        getHeading(), 
+        new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_rearLeft.getPosition(),
+          m_rearRight.getPosition()
+        },
+        pose);
+  
+    m_fieldYawOffset = getHeading().minus(pose.getRotation());
+  }
+  
+
+  public void driveFieldRelative(double vx, double vy, double omega) {
+    ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(vx, vy, omega, getFieldAdjustedHeading());
+    var states = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+    SwerveDriveKinematics.desaturateWheelSpeeds(states, DriveConstants.kMaxSpeedMetersPerSecond);
+    m_frontLeft.setDesiredState(states[0]);
+    m_frontRight.setDesiredState(states[1]);
+    m_rearLeft.setDesiredState(states[2]);
+    m_rearRight.setDesiredState(states[3]);
+}
+
+
 
   /**
    * Returns the turn rate of the robot.
