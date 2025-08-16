@@ -255,9 +255,11 @@ public ChassisSpeeds getChassisSpeeds() {
 
   public void zeroToAlliance() {
     Alliance a = DriverStation.getAlliance().orElse(Alliance.Blue);
-    Rotation2d desiredForward = (a == Alliance.Blue) ? new Rotation2d() : Rotation2d.fromDegrees(180.0);
-    m_fieldYawOffset = getHeading().minus(desiredForward);
+    // Rotation2d desiredForward = (a == Alliance.Blue) ? new Rotation2d() : Rotation2d.fromDegrees(180.0);
+    // m_fieldYawOffset = getHeading().minus(desiredForward); TEST
+    m_fieldYawOffset = (a == Alliance.Blue) ? new Rotation2d(): Rotation2d.fromDegrees(180.0);
   }
+
 
   public void resetPoseAllianceAware(Pose2d pose) {
     m_poseEstimator.resetPosition(
@@ -270,7 +272,7 @@ public ChassisSpeeds getChassisSpeeds() {
         },
         pose);
   
-    m_fieldYawOffset = getHeading().minus(pose.getRotation());
+   // m_fieldYawOffset = getHeading().minus(pose.getRotation()); TEST
   }
   
 
