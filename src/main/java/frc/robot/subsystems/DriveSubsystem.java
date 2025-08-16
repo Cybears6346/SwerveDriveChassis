@@ -233,6 +233,7 @@ public ChassisSpeeds getChassisSpeeds() {
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();
+    zeroToAlliance();
   }
 
   /**
